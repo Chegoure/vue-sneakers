@@ -2,10 +2,10 @@
   <div
     class="flex items-center gap-4 rounded-[20px] border border-[#F3F3F3] p-4"
   >
-    <img class="h-16 w-16" src="/sneakers/sneakers-4.jpg" alt="Sneakers" />
+    <img class="h-16 w-16" src="/sneakers/sneakers-1.jpg" alt="Sneakers" />
 
     <div class="flex flex-col">
-      <p>Лакацакели кайфовые Шляпоцакель 228 СВ</p>
+      <p>Лакацакели кайфовые</p>
 
       <div class="mt-2 flex justify-between">
         <b>88888 руб.</b>

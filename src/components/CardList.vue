@@ -14,8 +14,5 @@ const onClickAdd = () => {
       :price="12990"
       :onClickAdd
     />
-    <Card />
-    <Card />
-    <Card />
   </div>
 </template>
