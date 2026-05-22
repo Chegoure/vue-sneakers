@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import axios from 'axios'
 
 import Header from './components/Header.vue'
@@ -8,14 +8,44 @@ import Drawer from './components/Drawer.vue'
 
 const items = ref([])
 
-onMounted(async () => {
+const filters = reactive({
+  sortBy: 'title',
+  searchQuery: '',
+})
+
+const onChangeSelect = (event) => {
+  filters.sortBy = event.target.value
+}
+
+const onChangeSearchInput = (event) => {
+  filters.searchQuery = event.target.value
+}
+
+const fetchItems = async () => {
   try {
-    const { data } = await axios.get('https://4af5d8fdd7738693.mokky.dev/items')
+    const params = {
+      sortBy: filters.sortBy,
+    }
+
+    if (filters.searchQuery) {
+      params.title = `*${filters.searchQuery}*`
+    }
+
+    const { data } = await axios.get(
+      'https://4af5d8fdd7738693.mokky.dev/items',
+      {
+        params,
+      },
+    )
     items.value = data
   } catch (error) {
     console.log(error)
   }
-})
+}
+
+onMounted(fetchItems)
+
+watch(filters, fetchItems)
 </script>
 
 <template>
@@ -29,16 +59,18 @@ onMounted(async () => {
 
         <div class="flex gap-4">
           <select
+            @change="onChangeSelect"
             class="rounded-md border border-gray-200 px-3 py-2 outline-none"
           >
-            <option>По названию</option>
-            <option>По цене (дешевле)</option>
-            <option>По цене (дороже)</option>
+            <option value="name">По названию</option>
+            <option value="price">По цене (дешевле)</option>
+            <option value="-price">По цене (дороже)</option>
           </select>
 
           <div class="relative">
             <img class="absolute top-3 left-3" src="/search.svg" />
             <input
+              @input="onChangeSearchInput"
               class="rounded-md border border-gray-200 py-2 pr-4 pl-11 outline-none focus:border-gray-400"
               placeholder="Поиск..."
             />
