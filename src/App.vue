@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, provide, ref, watch } from 'vue'
+import { onMounted, reactive, provide, computed, ref, watch } from 'vue'
 import axios from 'axios'
 
 import Header from './components/Header.vue'
@@ -10,6 +10,10 @@ const items = ref([])
 const cart = ref([])
 
 const drawerOpen = ref(false)
+
+const totalPrice = computed(() =>
+  cart.value.reduce((acc, item) => acc + item.price, 0),
+)
 
 const closeDrawer = () => {
   drawerOpen.value = false
@@ -25,12 +29,20 @@ const filters = reactive({
 })
 
 const addToCart = (item) => {
+  cart.value.push(item)
+  item.isAdded = true
+}
+
+const removeFromCart = (item) => {
+  cart.value.splice(cart.value.indexOf(item), 1)
+  item.isAdded = false
+}
+
+const onClickAddPlus = (item) => {
   if (!item.isAdded) {
-    cart.value.push(item)
-    item.isAdded = true
+    addToCart(item)
   } else {
-    cart.value.splice(cart.value.indexOf(item), 1)
-    item.isAdded = false
+    removeFromCart(item)
   }
   console.log(cart)
 }
@@ -129,16 +141,19 @@ onMounted(async () => {
 
 watch(filters, fetchItems)
 
-provide('cartActions', {
+provide('cart', {
+  cart,
   closeDrawer,
   openDrawer,
+  addToCart,
+  removeFromCart,
 })
 </script>
 
 <template>
   <Drawer v-if="drawerOpen" />
   <div class="m-auto mt-14 w-4/5 rounded-xl bg-white shadow-xl">
-    <Header @open-drawer="openDrawer" />
+    <Header :total-price="totalPrice" @open-drawer="openDrawer" />
 
     <div class="p-10">
       <div class="flex items-center justify-between">
@@ -169,7 +184,7 @@ provide('cartActions', {
         <CardList
           :items="items"
           @add-to-favorite="addToFavorite"
-          @add-to-cart="addToCart"
+          @add-to-cart="onClickAddPlus"
         />
       </div>
     </div>
