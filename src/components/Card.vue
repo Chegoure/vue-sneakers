@@ -6,9 +6,9 @@ defineProps({
   price: Number,
   isFavorite: Boolean,
   isAdded: Boolean,
-  onClickFavorite: Function,
-  onClickAdd: Function,
 })
+
+const emit = defineEmits(['onClickFavorite', 'onClickAdd'])
 </script>
 
 <template>
@@ -21,7 +21,7 @@ defineProps({
       class="absolute top-8 left-8"
       :src="!isFavorite ? '/like-1.svg' : '/like-2.svg'"
       alt="Like 2"
-      @click="onClickFavorite"
+      @click="emit('onClickFavorite')"
     />
 
     <img :src="imageUrl" alt="Sneakers" />
@@ -33,7 +33,7 @@ defineProps({
         <b>{{ price }} руб.</b>
       </div>
       <img
-        @click="onClickAdd"
+        @click="emit('onClickAdd')"
         :src="!isAdded ? '/plus.svg' : '/checked.svg'"
         alt="Plus"
       />

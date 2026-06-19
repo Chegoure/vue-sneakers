@@ -15,12 +15,12 @@ const emit = defineEmits(['addToFavorite', 'addToCart'])
       :key="item.id"
       :id="item.id"
       :title="item.title"
-      :imageUrl="item.imageUrl"
+      :image-url="item.imageUrl"
       :price="item.price"
-      :onClickFavorite="() => emit('addToFavorite', item)"
-      :onClickAdd="() => emit('addToCart', item)"
-      :isFavorite="item.isFavorite"
-      :isAdded="item.isAdded"
+      :is-favorite="item.isFavorite"
+      :is-added="item.isAdded"
+      @on-click-favorite="emit('addToFavorite', item)"
+      @on-click-add="emit('addToCart', item)"
     />
   </div>
 </template>

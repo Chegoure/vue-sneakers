@@ -8,11 +8,19 @@ import Drawer from './components/Drawer.vue'
 
 const items = ref([])
 const cart = ref([])
+const isCreatingOrder = ref(false)
 
 const drawerOpen = ref(false)
 
 const totalPrice = computed(() =>
   cart.value.reduce((acc, item) => acc + item.price, 0),
+)
+const vatPrice = computed(() => Math.round((totalPrice.value * 5) / 100))
+
+const cartIsEmpty = computed(() => cart.value.length === 0)
+
+const cartButtonDisabled = computed(
+  () => isCreatingOrder.value || cartIsEmpty.value,
 )
 
 const closeDrawer = () => {
@@ -36,6 +44,26 @@ const addToCart = (item) => {
 const removeFromCart = (item) => {
   cart.value.splice(cart.value.indexOf(item), 1)
   item.isAdded = false
+}
+
+const createOrder = async () => {
+  try {
+    isCreatingOrder.value = true
+    const { data } = await axios.post(
+      'https://4af5d8fdd7738693.mokky.dev/orders',
+      {
+        items: cart.value,
+        totalPrice: totalPrice.value,
+      },
+    )
+
+    cart.value = []
+    return data
+  } catch (err) {
+    console.log(err)
+  } finally {
+    isCreatingOrder.value = false
+  }
 }
 
 const onClickAddPlus = (item) => {
@@ -102,6 +130,7 @@ const addToFavorite = async (item) => {
       )
       item.favoriteId = null
     }
+    console.log(item)
   } catch (err) {
     console.log(err)
   }
@@ -141,6 +170,13 @@ onMounted(async () => {
 
 watch(filters, fetchItems)
 
+watch(cart, () => {
+  items.value = items.value.map((item) => ({
+    ...item,
+    isAdded: false,
+  }))
+})
+
 provide('cart', {
   cart,
   closeDrawer,
@@ -151,7 +187,13 @@ provide('cart', {
 </script>
 
 <template>
-  <Drawer v-if="drawerOpen" />
+  <Drawer
+    v-if="drawerOpen"
+    :total-price="totalPrice"
+    :vat-price="vatPrice"
+    @create-order="createOrder"
+    :button-disabled="cartButtonDisabled"
+  />
   <div class="m-auto mt-14 w-4/5 rounded-xl bg-white shadow-xl">
     <Header :total-price="totalPrice" @open-drawer="openDrawer" />
 
