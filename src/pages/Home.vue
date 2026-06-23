@@ -33,7 +33,7 @@ const addToFavorite = async (item) => {
   try {
     if (!item.isFavorite) {
       const obj = {
-        parentId: item.id,
+        item_id: item.id,
       }
 
       item.isFavorite = true
@@ -64,7 +64,7 @@ const fetchFavorites = async () => {
 
     items.value = items.value.map((item) => {
       const favorite = favorites.find(
-        (favorite) => favorite.parentId === item.id,
+        (favorite) => favorite.item_id === item.id,
       )
 
       if (!favorite) {
