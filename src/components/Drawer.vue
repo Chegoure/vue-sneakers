@@ -11,6 +11,8 @@ const props = defineProps({
 })
 
 const isCreating = ref(false)
+const orderId = ref(null)
+
 const { cart, closeDrawer } = inject('cart')
 
 const createOrder = async () => {
@@ -26,7 +28,8 @@ const createOrder = async () => {
     )
 
     cart.value = []
-    return data
+    orderId.value = data.id
+    // return data
   } catch (err) {
     console.log(err)
   } finally {
@@ -44,11 +47,18 @@ const ButtonDisabled = computed(() => isCreating.value || cartIsEmpty.value)
   <div class="fixed top-0 right-0 z-20 h-full w-96 bg-white p-8">
     <DrawerHead />
 
-    <div v-if="!totalPrice" class="flex h-full items-center">
+    <div v-if="!totalPrice || orderId" class="flex h-full items-center">
       <InfoBlock
+        v-if="!totalPrice && !orderId"
         title="Корзина пустая"
         description="Добавьте хотя бы одну пару кроссовок, чтобы сделать заказ."
         image-url="/package-icon.png"
+      />
+      <InfoBlock
+        v-if="orderId"
+        title="Заказ оформлен!"
+        :description="`Ваш заказ #${orderId} скоро будет передан курьерской доставке.`"
+        image-url="/order-success-icon.png"
       />
     </div>
 
